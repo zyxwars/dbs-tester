@@ -134,7 +134,7 @@ if __name__ == "__main__":
                 print(f"[Test passed] {fileName}: Column names match")
 
                 if tests[fileName]["output_first_row"] != res[0]:
-                    print(f"[Test Failed] {fileName}: First column values don't match")
+                    print(f"[Test Failed] {fileName}: First row values don't match")
                     print(
                         f"expected :{tests[fileName]["output_first_row"]} != got:{res[0]}"
                     )
