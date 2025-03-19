@@ -127,16 +127,16 @@ if __name__ == "__main__":
                 if tests[fileName]["column_names"] != tuple(res_col_names):
                     print(f"[Test Failed] {fileName}: Column names don't match")
                     print(
-                        f"expected:{tests[fileName]["column_names"]} != got:{res_col_names}"
+                        f"expected:{tests[fileName]['column_names']} != got:{res_col_names}"
                     )
                     sys.exit(1)
 
                 print(f"[Test passed] {fileName}: Column names match")
 
                 if tests[fileName]["output_first_row"] != res[0]:
-                    print(f"[Test Failed] {fileName}: First row values don't match")
+                    print(f"[Test Failed] {fileName}: First column values don't match")
                     print(
-                        f"expected :{tests[fileName]["output_first_row"]} != got:{res[0]}"
+                        f"expected :{tests[fileName]['output_first_row']} != got:{res[0]}"
                     )
                     sys.exit(1)
 
