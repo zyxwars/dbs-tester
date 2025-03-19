@@ -1,5 +1,6 @@
 import sys
 import time
+from decimal import Decimal
 
 import jinja2
 import psycopg
@@ -42,9 +43,9 @@ tests = {
             "Monroe",
             1610612738,
             "Boston Celtics",
-            10.82,
-            2.27,
-            22,
+            Decimal("10.82"),
+            Decimal("2.27"),
+            Decimal("22"),
         ),
     },
     "3.sql": {
@@ -62,7 +63,19 @@ tests = {
             "missed_free_throws",
             "FT_percentage",
         ),
-        "output_first_row": (1627759, "Jaylen", "Brown", 32, 4, 7, 8, 57.89, 3, 2, 60),
+        "output_first_row": (
+            1627759,
+            "Jaylen",
+            "Brown",
+            32,
+            4,
+            7,
+            8,
+            Decimal("57.89"),
+            3,
+            2,
+            60,
+        ),
     },
     "4.sql": {
         "input": {"season_id": "22018"},
@@ -87,9 +100,9 @@ tests = {
             1610612737,
             "Atlanta Hawks",
             1986,
-            50.27,
+            Decimal("50.27"),
             1965,
-            49.73,
+            Decimal("49.73"),
             3951,
         ),
     },
@@ -99,7 +112,7 @@ tests = {
             "season_id",
             "stability",
         ),
-        "output_first_row": ("22007", 9.84),
+        "output_first_row": ("22007", Decimal("9.84")),
     },
 }
 
