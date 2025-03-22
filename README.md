@@ -19,7 +19,7 @@ source myvenv/bin/activate
 ```shell
 pip install Jinja2 "psycopg[binary]" tabulate
 ```
-4. **Create config.py by following config.example.py**
+4. **Create `config.py` by following `config.example.py`**
 5. The tester needs to be in the same folder as the sql files
 - The tester checks the validity of column names and first row values
 
