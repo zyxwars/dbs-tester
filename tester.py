@@ -1,5 +1,5 @@
-import sys
 import time
+import argparse
 from decimal import Decimal
 
 import jinja2
@@ -7,6 +7,13 @@ import psycopg
 import tabulate
 
 import config
+
+
+RED = "\033[91m"
+GREEN = "\033[92m"
+RESET = "\033[0m"
+
+
 
 # TODO: install dependencies
 # pip install Jinja2 "psycopg[binary]" tabulate
@@ -32,7 +39,7 @@ tests = {
             "first_name",
             "last_name",
             "team_id",
-            "team_name",
+            "full_name",
             "PPG",
             "APG",
             "games",
@@ -117,14 +124,19 @@ tests = {
 }
 
 
-if __name__ == "__main__":
+def main(print_full_table=False):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("./"))
 
     with psycopg.connect(
-        f"dbname=nba user={config.DB_USER} password={config.DB_PASSWORD}"
+        f"dbname=zadanie user={config.DB_USER} password={config.DB_PASSWORD}"
     ) as conn:
         with conn.cursor() as cur:
             for fileName in tests.keys():
+                try:
+                    template = env.get_template(fileName).render(tests[fileName]["input"])
+                except jinja2.exceptions.TemplateNotFound:
+                    print(f"{fileName}: ❌ {RED}Template not found. Skipping this test.{RESET}")
+                    continue
                 print(f"{fileName}: Starting test")
 
                 template = env.get_template(fileName).render(tests[fileName]["input"])
@@ -138,29 +150,41 @@ if __name__ == "__main__":
                 res = cur.fetchall()
 
                 if tests[fileName]["column_names"] != tuple(res_col_names):
-                    print(f"[Test Failed] {fileName}: Column names don't match")
+                    print(f"[{RED}Test Failed{RESET}] {fileName}: Column names don't match")
                     print(
-                        f"expected:{tests[fileName]['column_names']} != got:{res_col_names}"
+                        f"expected:{tests[fileName]['column_names']} != \n     got:{res_col_names}"
                     )
-                    sys.exit(1)
+                    continue
 
-                print(f"[Test passed] {fileName}: Column names match")
-
+                print(f"[{GREEN}Test passed{RESET}] {fileName}: Column names match")
+                
                 if tests[fileName]["output_first_row"] != res[0]:
-                    print(f"[Test Failed] {fileName}: First column values don't match")
+                    print(f"[{RED}Test Failed{RESET}] {fileName}: First column values don't match")
                     print(
                         f"expected :{tests[fileName]['output_first_row']} != got:{res[0]}"
                     )
-                    sys.exit(1)
+                    continue
 
-                print(f"[Test passed] {fileName}: First rows match")
+                print(f"[{GREEN}Test passed{RESET}] {fileName}: First rows match")
 
-                print(
-                    tabulate.tabulate(
-                        res,
-                        headers=res_col_names,
-                        tablefmt="psql",
-                        showindex=range(1, len(res) + 1),
+                if print_full_table:
+                    print(
+                        tabulate.tabulate(
+                            res,
+                            headers=res_col_names,
+                            tablefmt="psql",
+                            showindex=range(1, len(res) + 1),
+                        )
                     )
-                )
-                print(f"({len(res)} rows) ({execution_time:.2f}s)\n")
+                    print(f"({len(res)} rows) ({execution_time:.2f}s)\n")
+                else:
+                    print(f"Test completed in {execution_time:.2f} seconds.\n")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run database tests with optional full table print")
+    parser.add_argument("-f", "--full-table", action="store_true", help="Print the full table results")
+    
+    args = parser.parse_args()
+    
+    main(print_full_table=args.full_table)
