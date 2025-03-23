@@ -141,13 +141,17 @@ def main(print_full_table=False):
 
                 template = env.get_template(fileName).render(tests[fileName]["input"])
 
-                execution_start_time = time.time()
-                cur.execute(template)
-                execution_end_time = time.time()
-                execution_time = execution_end_time - execution_start_time
+                try:
+                    execution_start_time = time.time()
+                    cur.execute(template)
+                    execution_end_time = time.time()
+                    execution_time = execution_end_time - execution_start_time
 
-                res_col_names = [desc[0] for desc in cur.description]
-                res = cur.fetchall()
+                    res_col_names = [desc[0] for desc in cur.description]
+                    res = cur.fetchall()
+                except Exception as e:
+                    print(f"{fileName}: {RED}Error in the {fileName} file{RESET}")
+                    continue
 
                 if tests[fileName]["column_names"] != tuple(res_col_names):
                     print(f"[{RED}Test Failed{RESET}] {fileName}: Column names don't match")
@@ -156,7 +160,7 @@ def main(print_full_table=False):
                     )
                     continue
 
-                print(f"[{GREEN}Test passed{RESET}] {fileName}: Column names match")
+                else: print(f"[{GREEN}Test passed{RESET}] {fileName}: Column names match")
                 
                 if tests[fileName]["output_first_row"] != res[0]:
                     print(f"[{RED}Test Failed{RESET}] {fileName}: First column values don't match")
