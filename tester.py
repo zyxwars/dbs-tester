@@ -128,7 +128,7 @@ def main(print_full_table=False):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader("./"))
 
     with psycopg.connect(
-        f"dbname=zadanie user={config.DB_USER} password={config.DB_PASSWORD}"
+        f"dbname={config.DB_NAME} user={config.DB_USER} password={config.DB_PASSWORD}"
     ) as conn:
         with conn.cursor() as cur:
             for fileName in tests.keys():
